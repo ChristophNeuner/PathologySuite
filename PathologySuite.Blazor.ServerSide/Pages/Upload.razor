@@ -1,0 +1,62 @@
+﻿@page "/upload"
+@using System.IO;
+@using System.Diagnostics;
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
+
+
+
+<h1>Blueimp Uploader</h1>
+<div class="container">
+    <!-- The file upload form used as target for the file upload widget -->
+    <form id="fileupload"
+          method="POST"
+          data-url="api/upload/SaveBlueimp"
+          enctype="multipart/form-data">
+        <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
+        <div class="row fileupload-buttonbar">
+            <div class="col-lg-7">
+                <!-- The fileinput-button span is used to style the file input field as button -->
+                <span class="btn btn-success fileinput-button">
+                    <i class="glyphicon glyphicon-plus"></i>
+                    <span>Add files</span>
+                    <input type="file" name="files[]" multiple />
+                </span>
+                <button id="button_upload_all" type="submit" class="btn btn-primary start">
+                    <i class="glyphicon glyphicon-upload"></i>
+                    <span>Upload all</span>
+                </button>
+                @*<button id="button_cancel_all" type="reset" class="btn btn-warning cancel">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Cancel all uploads</span>
+                </button>*@
+                @*<button type="button" class="btn btn-danger delete">
+                    <i class="glyphicon glyphicon-trash"></i>
+                    <span>Delete selected</span>
+                </button>
+                <input type="checkbox" class="toggle" />*@
+                <!-- The global file processing state -->
+                @*<span class="fileupload-process"></span>*@
+            </div>
+        </div>
+        <!-- The global progress state -->
+        <progress id="progress_global" max="100" value="0"></progress>
+
+        <!-- The table listing the files available for upload/download -->
+        <table role="presentation" class="table table-striped">
+            <tbody id="UploadList" class="files"></tbody>
+        </table>
+    </form>
+</div>
+
+
+
+@code{
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JSRuntime.InvokeAsync<string>("InitUploader");
+        }
+    }
+}

@@ -1,0 +1,46 @@
+﻿@page "/"
+@using System.Xml.Linq
+@using System.Text
+@using PathologySuite.Shared.Core.Interfaces
+@using System.IO
+
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment _webHostEnvironment
+@inject IJSRuntime JSRuntime
+@inject IDziReader _dziReader
+
+<div id=@viewerId style="width: 800px; height: 600px;"></div>
+
+@foreach (var p in thumbnailPaths)
+{
+    <img src="@p" />
+}
+
+
+@code{
+
+    string viewerId = "openseadragon1";
+    List<string> thumbnailPaths = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var thumbnailNames = Directory.GetFiles($@"{_webHostEnvironment.WebRootPath}\histo\", "*-thumbnail.jpg").Select(Path.GetFileName).ToList();
+        foreach (var n in thumbnailNames)
+        {
+            thumbnailPaths.Add($@"http://localhost:5000/histo/{n}");
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            string dziFilePath = $@"D:\histo\1579-12-III-HE.dzi";
+            string dziTilesPath = $@"D:\histo\1579-12-III-HE_files\";
+            string dziFilePathWeb = "http://localhost:5000/histo/1579-12-III-HE.dzi";
+            string dziTilesPathWeb = "http://localhost:5000/histo/1579-12-III-HE_files/";
+
+            var dzi = _dziReader.ReadDziFile(dziFilePath);
+            await JSRuntime.InvokeAsync<string>("ViewHisto", viewerId, dziTilesPathWeb, dzi.Xmlns, dzi.Format, dzi.Overlap, dzi.TileSize, dzi.Height, dzi.Width);
+        }
+    }
+}
