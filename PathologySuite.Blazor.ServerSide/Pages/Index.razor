@@ -3,44 +3,47 @@
 @using System.Text
 @using PathologySuite.Shared.Core.Interfaces
 @using System.IO
+@using PathologySuite.Shared.DI.Options
 
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment _webHostEnvironment
 @inject IJSRuntime JSRuntime
 @inject IDziReader _dziReader
+@inject PathOptions _pathOptions
 
-<div id=@viewerId style="width: 800px; height: 600px;"></div>
+<div id=@viewerId style="width: 1000px; height: 500px"></div>
 
-@foreach (var p in thumbnailPaths)
+@foreach (String p in thumbnailPaths)
 {
-    <img src="@p" />
+    <img src="@p" @onclick="@( () => UpdateHistoViewer(p))" />
 }
 
 
 @code{
-
     string viewerId = "openseadragon1";
+
     List<string> thumbnailPaths = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        var thumbnailNames = Directory.GetFiles($@"{_webHostEnvironment.WebRootPath}\histo\", "*-thumbnail.jpg").Select(Path.GetFileName).ToList();
-        foreach (var n in thumbnailNames)
+        var thumbnailNames = Directory.GetFiles($@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/", "*-thumbnail.jpg").Select(Path.GetFileName).ToList();
+        foreach (String n in thumbnailNames)
         {
-            thumbnailPaths.Add($@"http://localhost:5000/histo/{n}");
+            thumbnailPaths.Add($@"{_pathOptions.WsiBaseUri}/{_pathOptions.WsiBaseFolderName}/{n}");
         }
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    private async Task UpdateHistoViewer(String thumbnailPath)
     {
-        if (firstRender)
-        {
-            string dziFilePath = $@"D:\histo\1579-12-III-HE.dzi";
-            string dziTilesPath = $@"D:\histo\1579-12-III-HE_files\";
-            string dziFilePathWeb = "http://localhost:5000/histo/1579-12-III-HE.dzi";
-            string dziTilesPathWeb = "http://localhost:5000/histo/1579-12-III-HE_files/";
+        String thumbnailName = thumbnailPath.Split('/')[^1];
+        String wsiName = thumbnailName.Replace("-thumbnail.jpg", "");
 
-            var dzi = _dziReader.ReadDziFile(dziFilePath);
-            await JSRuntime.InvokeAsync<string>("ViewHisto", viewerId, dziTilesPathWeb, dzi.Xmlns, dzi.Format, dzi.Overlap, dzi.TileSize, dzi.Height, dzi.Width);
-        }
+        string dziFilePath = $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{wsiName}.dzi";
+        string dziTilesPath = $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{wsiName}_files/";
+        string dziFilePathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}.dzi";
+        string dziTilesPathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}_files/";
+
+
+        var dzi = _dziReader.ReadDziFile(dziFilePath);
+        await JSRuntime.InvokeAsync<string>("ViewHisto", viewerId, dziTilesPathWeb, dzi.Xmlns, dzi.Format, dzi.Overlap, dzi.TileSize, dzi.Height, dzi.Width);
     }
 }

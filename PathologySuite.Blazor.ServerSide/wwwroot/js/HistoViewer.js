@@ -1,4 +1,7 @@
 ﻿window.ViewHisto = (divId, imgPath, xmlns, format, overlap, tileSize, height, width) => {
+
+    //$('#' + divId).css({ "width": "100%", "height": "50%" })
+
     var viewer = OpenSeadragon({
         id: divId,
         tileSources: {

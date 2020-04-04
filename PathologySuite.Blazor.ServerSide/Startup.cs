@@ -10,6 +10,7 @@ using PathologySuite.Blazor.ServerSide.Areas.Identity;
 using PathologySuite.Blazor.ServerSide.Data;
 using PathologySuite.Shared.Core.Interfaces;
 using PathologySuite.Shared.Core;
+using PathologySuite.Shared.DI.Options;
 
 namespace PathologySuite.Blazor.ServerSide
 {
@@ -26,6 +27,8 @@ namespace PathologySuite.Blazor.ServerSide
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddRazorPages().AddRazorRuntimeCompilation();
+
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
@@ -34,7 +37,6 @@ namespace PathologySuite.Blazor.ServerSide
             services.AddRazorPages();
             //services.AddServerSideBlazor(/*options => options.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(120)*/);
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
-            services.AddSingleton<WeatherForecastService>();
             services.AddServerSideBlazor().AddHubOptions(o =>
             {
                 o.MaximumReceiveMessageSize = 10240000000; //about 10GB
@@ -43,9 +45,9 @@ namespace PathologySuite.Blazor.ServerSide
                 options.DetailedErrors = true;
             });
 
-
             services.AddScoped<IWsiProcessor, WsiProcessorNetVips>();
             services.AddScoped<IDziReader, DziReaderNetVips>();
+            services.AddSingleton<PathOptions>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -55,6 +57,7 @@ namespace PathologySuite.Blazor.ServerSide
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
+                app.UseBrowserLink();
             }
             else
             {

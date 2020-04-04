@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using PathologySuite.Shared.Core.Interfaces;
+using PathologySuite.Shared.DI.Options;
 using PathologySuite.Shared.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -21,12 +22,15 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
     {
         private IWebHostEnvironment _hostingEnv;
         private IWsiProcessor _wsiProcessor;
-        private string _basePath = @"\wwwroot\histo";
+        private IWebHostEnvironment _webHostEnvironment;
+        private PathOptions _pathOptions;
 
-        public UploadController(IWebHostEnvironment env, IWsiProcessor wsiProcessor)
+        public UploadController(IWebHostEnvironment env, IWsiProcessor wsiProcessor, IWebHostEnvironment webHostEnvironment, PathOptions pathOptions)
         {
             _hostingEnv = env;
             _wsiProcessor = wsiProcessor;
+            _webHostEnvironment = webHostEnvironment;
+            _pathOptions = pathOptions;
         }
 
         [HttpPost("[action]")]
@@ -45,14 +49,13 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
                                         .Parse(file.ContentDisposition)
                                         .FileName
                                         .Trim('"');
-                    var filepath = _hostingEnv.ContentRootPath + $@"{_basePath}\{filename}";
+                    var filepath =  $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{filename}";
 
-                    // TODO change this to be more generic
-                    string baseURL = "http://localhost:5000/histo/";
-                    string fileURL = $@"{baseURL}/{filename}";
+                    string fileURL = $@"{_pathOptions.WsiBaseUri}/{_pathOptions.WsiBaseFolderName}/{filename}";
                     string filenameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                    string thumbURL = $@"{baseURL}/{filenameWithoutExtension}-thumbnail.jpg";
-                    string deleteURL = $@"";
+                    string thumbURL = $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{filenameWithoutExtension}-thumbnail.jpg";
+                    string deleteURL = $@"{_pathOptions.WsiBaseUri}api/upload/DeleteBlueimp/?filename={filename}";
+                    //string deleteURL = $@"{_pathOptions.WsiBaseUri}/api/upload/DeleteBlueimp";
                     responseModels.Add(new BlueimpUploadJsonResponseModel(filename, file.Length, fileURL, thumbURL, deleteURL, "DELETE", ""));
 
 
@@ -98,7 +101,7 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
         {
             try
             {
-                var filepath = _hostingEnv.ContentRootPath + $@"{_basePath}\{filename}";
+                var filepath = $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{filename}";
                 if (System.IO.File.Exists(filepath))
                 {
                     _wsiProcessor.GenerateThumbnailAndDzi(filepath);
@@ -112,25 +115,49 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
         }
 
 
-        //TODO
-        [HttpPost("[action]")]
-        public void RemoveBlueimp(IList<IFormFile> UploadFiles)
+        [HttpGet("[action]")]
+        public async Task<JsonResult> DeleteBlueimp(string filename)
         {
+            filename = Path.GetFileNameWithoutExtension(filename);
+            bool success = false;
             try
             {
-                var filepath = _hostingEnv.ContentRootPath + $@"{_basePath}\{UploadFiles[0].FileName}";
-                if (System.IO.File.Exists(filepath))
+                foreach (string file in System.IO.Directory.GetFiles($@"{ _webHostEnvironment.WebRootPath}/{ _pathOptions.WsiBaseFolderName}/"))
                 {
-                    System.IO.File.Delete(filepath);
+                    if (file.Contains(filename))
+                    {
+                        System.IO.File.Delete(file);
+
+                        foreach(string dir in System.IO.Directory.GetDirectories($@"{ _webHostEnvironment.WebRootPath}/{ _pathOptions.WsiBaseFolderName}/"))
+                        {
+                            if (dir.Contains(filename))
+                            {
+                                System.IO.Directory.Delete(dir);
+                            }
+                        }
+
+                        success = true;
+                    }
                 }
+
+                //var filepath = _hostingEnv.ContentRootPath + $@"{_basePath}\{UploadFiles[0].FileName}";
+                //if (System.IO.File.Exists(filepath))
+                //{
+                //    System.IO.File.Delete(filepath);
+                //}
             }
             catch (Exception e)
             {
-                Response.Clear();
-                Response.StatusCode = 200;
-                Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = "File removed successfully";
-                Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = e.Message;
+
+                return Json(new PathologySuite.Shared.Models.BlueimpDeleteJsonResponseModel(filename, false));
+                //Response.Clear();
+                //Response.StatusCode = 200;
+                //Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = "File removed successfully";
+                //Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = e.Message;
+
             }
+
+            return Json(new PathologySuite.Shared.Models.BlueimpDeleteJsonResponseModel(filename, success));
         }
     }
 }
