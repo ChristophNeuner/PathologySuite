@@ -119,7 +119,7 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
         public async Task<JsonResult> DeleteBlueimp(string filename)
         {
             filename = Path.GetFileNameWithoutExtension(filename);
-            bool success = false;
+            bool success = true;
             try
             {
                 foreach (string file in System.IO.Directory.GetFiles($@"{ _webHostEnvironment.WebRootPath}/{ _pathOptions.WsiBaseFolderName}/"))
@@ -135,8 +135,6 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
                                 System.IO.Directory.Delete(dir);
                             }
                         }
-
-                        success = true;
                     }
                 }
 
