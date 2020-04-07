@@ -28,15 +28,24 @@
                 </button>
                 <button id="button_cancel_all" type="reset" class="btn btn-warning cancel">
                     <i class="glyphicon glyphicon-ban-circle"></i>
-                    <span>Cancel all uploads</span>
+                    <span>Cancel all ongoing uploads</span>
                 </button>
-                @*<button type="button" class="btn btn-danger delete">
+                <button id="button_pause_all" type="button" class="btn btn-toolbar">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Pause all ongoing uploads</span>
+                </button>
+                <button id="button_resume_all" type="button" class="btn btn-toolbar">
+                    <i class="glyphicon glyphicon-ban-circle"></i>
+                    <span>Resume all paused uploads</span>
+                </button>
+                <button id="button_delete_all" type="button" class="btn btn-danger delete">
                     <i class="glyphicon glyphicon-trash"></i>
-                    <span>Delete selected</span>
+                    <span>Delete all finished uploads from the server</span>
                 </button>
-                <input type="checkbox" class="toggle" />*@
-                <!-- The global file processing state -->
-                @*<span class="fileupload-process"></span>*@
+                <button id="x_all" type="button" class="btn btn-success">
+                    <i class="glyphicon"></i>
+                    <span>X all</span>
+                </button>
             </div>
         </div>
         <!-- The global progress state -->
