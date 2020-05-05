@@ -10,15 +10,24 @@ namespace PathologySuite.Shared.Core
 {
     public class WsiProcessorNetVips : IWsiProcessor
     {
-        public void GenerateThumbnailAndDzi(string path)
+        public void GenerateThumbnail(string path)
+        {
+            Task.Run(() =>
+            {
+                string filenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
+                string directoryName = Path.GetDirectoryName(path);
+                Image thumbnail = Image.NewFromFile(path).ThumbnailImage(200);
+                thumbnail.Jpegsave($@"{directoryName}\{filenameWithoutExtension}-thumbnail.jpg");
+            });
+        }
+
+        public void GenerateDzi(string path)
         {
             Task.Run(() =>
             {
                 string filenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
                 string directoryName = Path.GetDirectoryName(path);
                 Image img = Image.NewFromFile(path);
-                Image thumbnail = img.ThumbnailImage(200);
-                thumbnail.Jpegsave($@"{directoryName}\{filenameWithoutExtension}-thumbnail.jpg");
                 img.Dzsave($@"{directoryName}\{filenameWithoutExtension}");
             });
         }

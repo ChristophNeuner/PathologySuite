@@ -3,6 +3,8 @@ var filenameToUploadedBytes = {}
 var filenameToProgress = {}
 //set value to true, if paused intentionally (pause with data.abort())
 var filenameToIsPaused = {}
+//api url that shall be invoked on the server, when upload is complete and file can be further processed on the server
+//var filenameToDoneUrl = {}
 
 window.InitUploader = () => {
     $('#fileupload').fileupload({
@@ -22,10 +24,6 @@ window.InitUploader = () => {
             addUploadButton(data);
             addIndividualProgressBar(data, 0);
             addXButton(data);
-       
-            $("#button_cancel_all").on("click", function () {
-                data.context.find(".cancel_button_individual").click();
-            })
         },
 
         progress: function (e, data) {
@@ -59,9 +57,8 @@ window.InitUploader = () => {
                 data.context.find(".delete_button_individual").click();
             })
 
-
-            //TODO make post request to server, that file has been completely uploaded and can be processed
-
+            console.log(data.result[0]['doneUrl']);
+            ajaxDoneRequest(data.result[0]['doneUrl']);
         },
         fail: async function (e, data) {
 
@@ -76,6 +73,10 @@ window.InitUploader = () => {
 }
 
 
+
+
+
+
 function addUploadButton(data) {
     data.context.append($('<button/>').addClass('upload_button_individual').text('Upload')
         .click(async function () {
@@ -87,7 +88,6 @@ function addUploadButton(data) {
             //filename = data.files[0].name;
             addCancelOrDeleteButton(data, buttonType.cancel);
             addPauseButton(data);
-
         })
     );
 
@@ -107,7 +107,7 @@ function addPauseButton(data) {
             //abort() triggers the "fail" callback
             data.abort();
             //this prevents abort() from removing ui elements
-            data.context.append($('<p/>').replaceAll($(this)));                                       
+            data.context.append($('<p/>').replaceAll($(this)));
         }))
 
     $("#button_pause_all").on("click", function () {
@@ -144,6 +144,10 @@ async function addCancelOrDeleteButton(data, buttonType) {
     if (buttonType == 1) {
         cssClassName = 'cancel_button_individual';
         buttonText = 'Cancel';
+
+        $("#button_cancel_all").on("click", function () {
+            data.context.find(".cancel_button_individual").click();
+        })
     }
     else if (buttonType == 2) {
         cssClassName = 'delete_button_individual';
@@ -166,7 +170,7 @@ async function addCancelOrDeleteButton(data, buttonType) {
             }
             else if (!result) {
                 console.log('something went wrong, could not delete from the server: ' + filename);
-                retryAjaxDeleteRequest(filename, 'deleting from the server');
+                retryAjaxDeleteRequest(filename);
             }
             else {
                 console.log('ajaxDeleteRequest: no response from server')
@@ -194,6 +198,19 @@ async function addXButton(data) {
     })
 }
 
+
+//Let the server know, when the upload is complete and the file can be further processed.
+async function ajaxDoneRequest(url) {
+    result = await $.ajax({
+        url: url,
+        type: 'POST',
+        dataType: "json"
+    });
+
+    console.log(result);
+    return result['success'];
+}
+
 async function ajaxDeleteRequest(filename) {
     if (filenameToUploadedBytes[filename] > 0) {
         result = await $.ajax({
@@ -208,14 +225,14 @@ async function ajaxDeleteRequest(filename) {
     }
 }
 
-async function retryAjaxDeleteRequest(filename, operationName) {
+async function retryAjaxDeleteRequest(filename) {
     for (i = 1; i < 50; i++) {
         ms = i * 100;
-        console.log('retry ' + operationName + ': ' + filename + ' in ' + ms + 'ms');
+        console.log('retry deletion' + ': ' + filename + ' in ' + ms + 'ms');
         await timeout(ms);
         result = await ajaxDeleteRequest(filename);
         if (result) {
-            console.log('successfully ' + operationName + ' ' + filename)
+            console.log('successfully deleted ' + filename)
             break;
         }
     }

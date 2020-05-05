@@ -31,6 +31,11 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
             _wsiProcessor = wsiProcessor;
             _webHostEnvironment = webHostEnvironment;
             _pathOptions = pathOptions;
+
+            if (!System.IO.Directory.Exists(_pathOptions.WsiBasePath))
+            {
+                System.IO.Directory.CreateDirectory(_pathOptions.WsiBasePath);
+            }
         }
 
         [HttpPost("[action]")]
@@ -49,14 +54,14 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
                                         .Parse(file.ContentDisposition)
                                         .FileName
                                         .Trim('"');
-                    var filepath =  $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{filename}";
+                    var filepath =  $@"{_pathOptions.WsiBasePath}/{filename}";
 
                     string fileURL = $@"{_pathOptions.WsiBaseUri}/{_pathOptions.WsiBaseFolderName}/{filename}";
                     string filenameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                    string thumbURL = $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{filenameWithoutExtension}-thumbnail.jpg";
+                    string thumbURL = $@"{_pathOptions.WsiBasePath}/{filenameWithoutExtension}-thumbnail.jpg";
                     string deleteURL = $@"{_pathOptions.WsiBaseUri}api/upload/DeleteBlueimp/?filename={filename}";
-                    //string deleteURL = $@"{_pathOptions.WsiBaseUri}/api/upload/DeleteBlueimp";
-                    responseModels.Add(new BlueimpUploadJsonResponseModel(filename, file.Length, fileURL, thumbURL, deleteURL, "DELETE", ""));
+                    string doneURL = $@"{_pathOptions.WsiBaseUri}api/upload/OnAfterSuccessfulUploadBlueimp/?filename={filename}";
+                    responseModels.Add(new BlueimpUploadJsonResponseModel(filename, file.Length, fileURL, thumbURL, deleteURL, doneURL, "DELETE", ""));
 
 
                     if (!System.IO.File.Exists(filepath))
@@ -96,15 +101,17 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
             return Json(responseModels);
         }
 
-        [HttpPost("[action]")]
-        public void OnAfterSuccessfulUploadBlueimp(string filename)
+        [HttpGet("[action]")]
+        public JsonResult OnAfterSuccessfulUploadBlueimp(string filename)
         {
             try
             {
-                var filepath = $@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/{filename}";
+                var filepath = $@"{_pathOptions.WsiBasePath}/{filename}";
                 if (System.IO.File.Exists(filepath))
                 {
-                    _wsiProcessor.GenerateThumbnailAndDzi(filepath);
+                    //fire and forget method in new task
+                    _wsiProcessor.GenerateThumbnail(filepath);
+                    //_wsiProcessor.GenerateDzi(filepath);
                 }
             }
             catch (Exception e)
@@ -112,6 +119,8 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
                 //TODO
                 throw e;
             }
+
+            return Json(new BlueimpDoneJsonResponseModel(filename, true));
         }
 
 
@@ -122,13 +131,13 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
             bool success = true;
             try
             {
-                foreach (string file in System.IO.Directory.GetFiles($@"{ _webHostEnvironment.WebRootPath}/{ _pathOptions.WsiBaseFolderName}/"))
+                foreach (string file in System.IO.Directory.GetFiles($@"{ _pathOptions.WsiBasePath}/"))
                 {
                     if (file.Contains(filename))
                     {
                         System.IO.File.Delete(file);
 
-                        foreach(string dir in System.IO.Directory.GetDirectories($@"{ _webHostEnvironment.WebRootPath}/{ _pathOptions.WsiBaseFolderName}/"))
+                        foreach(string dir in System.IO.Directory.GetDirectories($@"{ _pathOptions.WsiBasePath}/"))
                         {
                             if (dir.Contains(filename))
                             {

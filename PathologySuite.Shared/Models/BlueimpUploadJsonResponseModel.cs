@@ -7,7 +7,7 @@ namespace PathologySuite.Shared.Models
 {
     public class BlueimpUploadJsonResponseModel
     {
-        public BlueimpUploadJsonResponseModel(string name, long size, string url, string thumbnailUrl, string deleteUrl, string deleteType, string error)
+        public BlueimpUploadJsonResponseModel(string name, long size, string url, string thumbnailUrl, string deleteUrl, string doneUrl, string deleteType, string error)
         {
             if (name is null)
             {
@@ -29,6 +29,11 @@ namespace PathologySuite.Shared.Models
                 throw new ArgumentNullException(nameof(deleteUrl));
             }
 
+            if(doneUrl is null)
+            {
+                throw new ArgumentNullException(nameof(doneUrl));
+            }
+
             if (deleteType is null)
             {
                 throw new ArgumentNullException(nameof(deleteType));
@@ -44,6 +49,7 @@ namespace PathologySuite.Shared.Models
             Url = url;
             ThumbnailUrl = thumbnailUrl;
             DeleteUrl = deleteUrl;
+            DoneUrl = doneUrl;
             DeleteType = deleteType;
             Error = error;
         }
@@ -53,6 +59,8 @@ namespace PathologySuite.Shared.Models
         public string Url { get; set; }
         public string ThumbnailUrl { get; set; }
         public string DeleteUrl { get; set; }
+        public string DoneUrl { get; private set; }
+
         public string DeleteType { get { return "DELETE"; } private set { } }
         public string Error { get; set; }
     }

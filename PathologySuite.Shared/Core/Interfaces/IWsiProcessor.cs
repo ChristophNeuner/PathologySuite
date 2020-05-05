@@ -7,6 +7,7 @@ namespace PathologySuite.Shared.Core.Interfaces
 {
     public interface IWsiProcessor
     {
-        void GenerateThumbnailAndDzi(string path);
+        void GenerateThumbnail(string path);
+        void GenerateDzi(string path);
     }
 }

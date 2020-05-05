@@ -1,0 +1,49 @@
+﻿@page "/viewer"
+@using System.Xml.Linq
+@using System.Text
+@using PathologySuite.Shared.Core.Interfaces
+@using System.IO
+@using PathologySuite.Shared.DI.Options
+
+@inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment _webHostEnvironment
+@inject IJSRuntime JSRuntime
+@inject IDziReader _dziReader
+@inject PathOptions _pathOptions
+
+<div id=@viewerId style="width: 1000px; height: 500px"></div>
+
+@foreach (String p in thumbnailPaths)
+{
+    <img src="@p" @onclick="@( () => UpdateHistoViewer(p))" />
+}
+
+
+@code{
+    string viewerId = "openseadragon1";
+
+    List<string> thumbnailPaths = new List<string>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var thumbnailNames = Directory.GetFiles($@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/", "*-thumbnail.jpg").Select(Path.GetFileName).ToList();
+        foreach (String n in thumbnailNames)
+        {
+            thumbnailPaths.Add($@"{_pathOptions.WsiBasePath}/{n}");
+        }
+    }
+
+    private async Task UpdateHistoViewer(String thumbnailPath)
+    {
+        String thumbnailName = thumbnailPath.Split('/')[^1];
+        String wsiName = thumbnailName.Replace("-thumbnail.jpg", "");
+
+        string dziFilePath = $@"{_pathOptions.WsiBasePath}/{wsiName}.dzi";
+        string dziTilesPath = $@"{_pathOptions.WsiBasePath}/{wsiName}_files/";
+        string dziFilePathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}.dzi";
+        string dziTilesPathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}_files/";
+
+
+        var dzi = _dziReader.ReadDziFile(dziFilePath);
+        await JSRuntime.InvokeAsync<string>("ViewHisto", viewerId, dziTilesPathWeb, dzi.Xmlns, dzi.Format, dzi.Overlap, dzi.TileSize, dzi.Height, dzi.Width);
+    }
+}

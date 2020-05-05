@@ -11,14 +11,18 @@ using PathologySuite.Blazor.ServerSide.Data;
 using PathologySuite.Shared.Core.Interfaces;
 using PathologySuite.Shared.Core;
 using PathologySuite.Shared.DI.Options;
+using Microsoft.Extensions.FileProviders;
+using System.IO;
 
 namespace PathologySuite.Blazor.ServerSide
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly PathOptions _pathOptions;
+        public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
+            _pathOptions = new PathOptions(wsiBasePath: $@"{env.WebRootPath}/histo", wsiBaseFolderName: $@"histo", wsiBaseUri: new System.Uri($@"localhost:5000/"));
         }
 
         public IConfiguration Configuration { get; }
@@ -47,7 +51,7 @@ namespace PathologySuite.Blazor.ServerSide
 
             services.AddScoped<IWsiProcessor, WsiProcessorNetVips>();
             services.AddScoped<IDziReader, DziReaderNetVips>();
-            services.AddSingleton<PathOptions>();
+            services.AddSingleton<PathOptions>(_pathOptions);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,8 +71,13 @@ namespace PathologySuite.Blazor.ServerSide
             }
 
             //app.UseHttpsRedirection();
-            app.UseStaticFiles();
+            app.UseStaticFiles(); // For the wwwroot folder
 
+            //app.UseStaticFiles(new StaticFileOptions
+            //{
+            //    FileProvider = new PhysicalFileProvider(_pathOptions.WsiBasePath), 
+            //    RequestPath = "/histo"
+            //});
 
             app.UseRouting();
 

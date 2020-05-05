@@ -9,12 +9,15 @@ namespace PathologySuite.Shared.DI.Options
 {
     public class PathOptions
     {
-        public PathOptions()
+        public PathOptions(String wsiBasePath, String wsiBaseFolderName, Uri wsiBaseUri)
         {
-            WsiBaseUri = new Uri($@"http://localhost:5000");
-            WsiBaseFolderName = "histo";
+            WsiBasePath = wsiBasePath;
+            WsiBaseFolderName = wsiBaseFolderName;
+            WsiBaseUri = wsiBaseUri;
         }
-        public Uri WsiBaseUri{get; set;}
-        public String WsiBaseFolderName { get; set; }
+        public String WsiBasePath{get; private set;}
+        public String WsiBaseFolderName { get; private set; }
+
+        public Uri WsiBaseUri { get; private set; }
     }
 }
