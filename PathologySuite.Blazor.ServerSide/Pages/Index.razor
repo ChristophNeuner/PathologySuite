@@ -3,22 +3,30 @@
 @using System.Text
 @using PathologySuite.Shared.Core.Interfaces
 @using System.IO
-@using PathologySuite.Shared.DI.Options
+@using PathologySuite.Shared.Options
+@using RabbitMQ.Client
+@using RabbitMQ.Client.Events
 
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment _webHostEnvironment
 @inject IJSRuntime JSRuntime
-@inject IDziReader _dziReader
 @inject PathOptions _pathOptions
 
 
 @foreach (String p in thumbnailPaths)
 {
     <img src="@p" />
+    <button @onclick="@(() => SendToAI(p))">send to AI</button>
 }
+
+<p>@ai_text</p>
 
 
 @code{
     List<string> thumbnailPaths = new List<string>();
+    string q_name_work = "pituitary_gland_entity_classification_work";
+    string q_name_preds = "pituitary_gland_entity_classification_preds";
+    string connection_address = "localhost";
+    string ai_text = "Predictions: ";
 
     protected override async Task OnInitializedAsync()
     {
@@ -27,5 +35,41 @@
         {
             thumbnailPaths.Add($@"/{_pathOptions.WsiBaseFolderName}/{n}");
         }
+    }
+
+    private async Task SendToAI(string thumbnailPath)
+    {
+        await LogToBrowserConsole(thumbnailPath);
+
+        // send message
+        var factory = new ConnectionFactory() { HostName = connection_address };
+        using (var connection = factory.CreateConnection())
+        using (var channel = connection.CreateModel())
+        {
+            channel.QueueDeclare(queue: q_name_work,
+                                 durable: false,
+                                 exclusive: false,
+                                 autoDelete: false,
+                                 arguments: null);
+
+
+            string message = "whole slide image of pituitary gland adenoma";
+            var body = Encoding.UTF8.GetBytes(message);
+
+            var properties = channel.CreateBasicProperties();
+            properties.Persistent = true;
+
+            channel.BasicPublish(exchange: "",
+                             routingKey: q_name_work,
+                             basicProperties: properties,
+                             body: body);
+        }
+
+        await LogToBrowserConsole($"Sent: {thumbnailPath}");
+    }
+
+    private async Task LogToBrowserConsole(string message)
+    {
+        await JSRuntime.InvokeAsync<string>("console.log", message);
     }
 }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PathologySuite.Shared.DI.Options
+namespace PathologySuite.Shared.Options
 {
     public class PathOptions
     {

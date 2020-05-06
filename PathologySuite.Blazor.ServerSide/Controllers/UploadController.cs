@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using PathologySuite.Shared.Core.Interfaces;
-using PathologySuite.Shared.DI.Options;
+using PathologySuite.Shared.Options;
 using PathologySuite.Shared.Models;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860

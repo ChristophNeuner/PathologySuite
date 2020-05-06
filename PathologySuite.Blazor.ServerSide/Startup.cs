@@ -10,7 +10,7 @@ using PathologySuite.Blazor.ServerSide.Areas.Identity;
 using PathologySuite.Blazor.ServerSide.Data;
 using PathologySuite.Shared.Core.Interfaces;
 using PathologySuite.Shared.Core;
-using PathologySuite.Shared.DI.Options;
+using PathologySuite.Shared.Options;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
 
