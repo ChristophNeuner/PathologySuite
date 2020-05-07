@@ -29,9 +29,14 @@ namespace RabbitMQReceiver
                     var body = ea.Body;
                     var message = Encoding.UTF8.GetString(body.ToArray());
                     Console.WriteLine(" [x] Received {0}", message);
+
+                    // Manual message acknowledgment
+                    // Note: it is possible to access the channel via
+                    //       ((EventingBasicConsumer)sender).Model here
+                    channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
                 };
                 channel.BasicConsume(queue: q_name_preds,
-                                     autoAck: true,
+                                     autoAck: false,
                                      consumer: consumer);
 
                 Console.WriteLine(" Press [enter] to exit.");
