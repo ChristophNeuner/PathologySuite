@@ -13,6 +13,9 @@ using PathologySuite.Shared.Core;
 using PathologySuite.Shared.Options;
 using Microsoft.Extensions.FileProviders;
 using System.IO;
+using RabbitMQ;
+using RabbitMQ.Client;
+using System.Threading.Channels;
 
 namespace PathologySuite.Blazor.ServerSide
 {
@@ -23,6 +26,19 @@ namespace PathologySuite.Blazor.ServerSide
         {
             Configuration = configuration;
             _pathOptions = new PathOptions(wsiBasePath: $@"{env.WebRootPath}/histo", wsiBaseFolderName: $@"histo", wsiBaseUri: new System.Uri($@"localhost:5000/"));
+
+            // create necessary rabbitMQ exchanges
+            //TODO: specify them at a central place and use a seperate script for creation
+            var factory = new ConnectionFactory() { HostName = "localhost" };
+            using(var connection = factory.CreateConnection())
+            using(var channel = connection.CreateModel())
+            {
+                channel.ExchangeDeclare(exchange: "PathologySuite.AI", type: "topic");
+
+                //Fair dispatch
+                channel.BasicQos(0, 1, false);
+            }
+
         }
 
         public IConfiguration Configuration { get; }

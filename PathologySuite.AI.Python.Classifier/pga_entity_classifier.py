@@ -1,6 +1,23 @@
 ### pituitary gland adenoma classifier
 # see https://github.com/ChristophNeuner/pituitary_gland_adenomas/blob/master/inference_pipelines.ipynb
 
+import os
+import typing
+from typing import Callable, Union, Dict
+import pathlib
+from pathlib import Path
+Path.ls = lambda x: [p for p in list(x.iterdir()) if '.ipynb_checkpoints' not in p.name]
+import sys
+import wsi_processing_pipeline
+import tile_extraction
+from tile_extraction import tiles, util, slide
+import fastai
+from fastai.vision.data import ImageList
+from fastai.vision.image import pil2tensor
+from fastai.basic_train import load_learner
+import pandas as pd
+import numpy as np
+
 def predict_pga_entity(path_exported_learner:Union[pathlib.Path, str], wsi_path:Union[pathlib.Path, str])->Dict:
     """
     Arguments:
@@ -81,5 +98,5 @@ def predict_pga_entity(path_exported_learner:Union[pathlib.Path, str], wsi_path:
     result = {}
     for n, c in enumerate(classes):
         result[c] = probs_wsi[n].item()
-    return result
+    return str(result)
 

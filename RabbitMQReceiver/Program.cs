@@ -9,19 +9,15 @@ namespace RabbitMQReceiver
     {
         static void Main(string[] args)
         {
-            string q_name_work = "pituitary_gland_entity_classification_work";
-            string q_name_preds = "pituitary_gland_entity_classification_preds";
+            string q_name_preds = "pituitary_gland_adenomas_entity_classification_predictions";
             string connection_address = "localhost";
 
             var factory = new ConnectionFactory() { HostName = connection_address };
             using (var connection = factory.CreateConnection())
             using (var channel = connection.CreateModel())
             {
-                channel.QueueDeclare(queue: q_name_preds,
-                                     durable: false,
-                                     exclusive: false,
-                                     autoDelete: false,
-                                     arguments: null);
+                channel.QueueDeclare(queue: q_name_preds, durable: true, exclusive: false, autoDelete: true, arguments: null);
+                channel.QueueBind(queue: q_name_preds, exchange: "PathologySuite.AI", routingKey: "multiLabelClassification.pituitaryAdenomas.entities.prediction");
 
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) =>

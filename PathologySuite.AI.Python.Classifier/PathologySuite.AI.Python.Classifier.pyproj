@@ -5,12 +5,12 @@
     <ProjectGuid>5ca5cc84-7da4-4642-8909-41d076f68192</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>RabbitMQ.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>openslide-win64-20171122\bin;openslide-win64-20171122;openslide-win64-20171122\include\openslide;openslide-win64-20171122\lib</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>PathologySuite.AI.Python.Classifier</Name>
     <RootNamespace>PathologySuite.AI.Python.Classifier</RootNamespace>
+    <InterpreterId>CondaEnv|CondaEnv|fastai1</InterpreterId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +25,130 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="RabbitMQ.py" />
+    <Compile Include="wsi_processing_pipeline\postprocessing\name_getter.py" />
+    <Compile Include="wsi_processing_pipeline\postprocessing\wsi_image_blocks.py" />
+    <Compile Include="wsi_processing_pipeline\postprocessing\__init__.py" />
+    <Compile Include="tile_extraction\filter.py" />
+    <Compile Include="tile_extraction\openslide_overwrite.py" />
+    <Compile Include="tile_extraction\slide.py" />
+    <Compile Include="tile_extraction\tiles.py" />
+    <Compile Include="tile_extraction\util.py" />
+    <Compile Include="tile_extraction\__init__.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="CondaEnv|CondaEnv|fastai1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="openslide-win64-20171122\" />
+    <Folder Include="openslide-win64-20171122\bin\" />
+    <Folder Include="openslide-win64-20171122\include\" />
+    <Folder Include="openslide-win64-20171122\include\openslide\" />
+    <Folder Include="openslide-win64-20171122\lib\" />
+    <Folder Include="openslide-win64-20171122\licenses\" />
+    <Folder Include="openslide-win64-20171122\licenses\cairo\" />
+    <Folder Include="openslide-win64-20171122\licenses\gdk-pixbuf\" />
+    <Folder Include="openslide-win64-20171122\licenses\gettext\" />
+    <Folder Include="openslide-win64-20171122\licenses\glib\" />
+    <Folder Include="openslide-win64-20171122\licenses\libffi\" />
+    <Folder Include="openslide-win64-20171122\licenses\libjpeg-turbo\" />
+    <Folder Include="openslide-win64-20171122\licenses\libpng\" />
+    <Folder Include="openslide-win64-20171122\licenses\libtiff\" />
+    <Folder Include="openslide-win64-20171122\licenses\libxml2\" />
+    <Folder Include="openslide-win64-20171122\licenses\OpenJPEG\" />
+    <Folder Include="openslide-win64-20171122\licenses\OpenSlide Java\" />
+    <Folder Include="openslide-win64-20171122\licenses\OpenSlide\" />
+    <Folder Include="openslide-win64-20171122\licenses\pixman\" />
+    <Folder Include="openslide-win64-20171122\licenses\SQLite\" />
+    <Folder Include="openslide-win64-20171122\licenses\win-iconv\" />
+    <Folder Include="openslide-win64-20171122\licenses\zlib\" />
+    <Folder Include="wsi_processing_pipeline\" />
+    <Folder Include="wsi_processing_pipeline\postprocessing\" />
+    <Folder Include="wsi_processing_pipeline\preprocessing\" />
+    <Folder Include="tile_extraction\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="openslide-win64-20171122\bin\iconv.dll" />
+    <Content Include="openslide-win64-20171122\bin\iconv.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libcairo-2.dll" />
+    <Content Include="openslide-win64-20171122\bin\libcairo-2.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libffi-6.dll" />
+    <Content Include="openslide-win64-20171122\bin\libffi-6.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libgdk_pixbuf-2.0-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libgdk_pixbuf-2.0-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libgio-2.0-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libgio-2.0-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libglib-2.0-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libglib-2.0-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libgmodule-2.0-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libgmodule-2.0-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libgobject-2.0-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libgobject-2.0-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libgthread-2.0-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libgthread-2.0-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libintl-8.dll" />
+    <Content Include="openslide-win64-20171122\bin\libintl-8.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libjpeg-62.dll" />
+    <Content Include="openslide-win64-20171122\bin\libjpeg-62.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libopenjp2.dll" />
+    <Content Include="openslide-win64-20171122\bin\libopenjp2.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libopenslide-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libopenslide-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libpixman-1-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libpixman-1-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libpng16-16.dll" />
+    <Content Include="openslide-win64-20171122\bin\libpng16-16.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libsqlite3-0.dll" />
+    <Content Include="openslide-win64-20171122\bin\libsqlite3-0.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libtiff-5.dll" />
+    <Content Include="openslide-win64-20171122\bin\libtiff-5.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\libxml2-2.dll" />
+    <Content Include="openslide-win64-20171122\bin\libxml2-2.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\openslide-jni.dll" />
+    <Content Include="openslide-win64-20171122\bin\openslide-jni.dll.debug" />
+    <Content Include="openslide-win64-20171122\bin\openslide-quickhash1sum.exe" />
+    <Content Include="openslide-win64-20171122\bin\openslide-quickhash1sum.exe.debug" />
+    <Content Include="openslide-win64-20171122\bin\openslide-show-properties.exe" />
+    <Content Include="openslide-win64-20171122\bin\openslide-show-properties.exe.debug" />
+    <Content Include="openslide-win64-20171122\bin\openslide-write-png.exe" />
+    <Content Include="openslide-win64-20171122\bin\openslide-write-png.exe.debug" />
+    <Content Include="openslide-win64-20171122\bin\openslide.jar" />
+    <Content Include="openslide-win64-20171122\bin\zlib1.dll" />
+    <Content Include="openslide-win64-20171122\bin\zlib1.dll.debug" />
+    <Content Include="openslide-win64-20171122\include\openslide\openslide-features.h" />
+    <Content Include="openslide-win64-20171122\include\openslide\openslide.h" />
+    <Content Include="openslide-win64-20171122\lib\libopenslide.lib" />
+    <Content Include="openslide-win64-20171122\licenses\cairo\COPYING" />
+    <Content Include="openslide-win64-20171122\licenses\cairo\COPYING-LGPL-2.1" />
+    <Content Include="openslide-win64-20171122\licenses\cairo\COPYING-MPL-1.1" />
+    <Content Include="openslide-win64-20171122\licenses\gdk-pixbuf\COPYING" />
+    <Content Include="openslide-win64-20171122\licenses\gettext\COPYING" />
+    <Content Include="openslide-win64-20171122\licenses\gettext\COPYING.LIB" />
+    <Content Include="openslide-win64-20171122\licenses\glib\COPYING" />
+    <Content Include="openslide-win64-20171122\licenses\libffi\LICENSE" />
+    <Content Include="openslide-win64-20171122\licenses\libjpeg-turbo\jsimdext.inc" />
+    <Content Include="openslide-win64-20171122\licenses\libjpeg-turbo\LICENSE.md" />
+    <Content Include="openslide-win64-20171122\licenses\libjpeg-turbo\README.ijg" />
+    <Content Include="openslide-win64-20171122\licenses\libpng\png.h" />
+    <Content Include="openslide-win64-20171122\licenses\libtiff\COPYRIGHT" />
+    <Content Include="openslide-win64-20171122\licenses\libxml2\COPYING" />
+    <Content Include="openslide-win64-20171122\licenses\OpenJPEG\LICENSE" />
+    <Content Include="openslide-win64-20171122\licenses\OpenSlide Java\lgpl-2.1.txt" />
+    <Content Include="openslide-win64-20171122\licenses\OpenSlide Java\LICENSE.txt" />
+    <Content Include="openslide-win64-20171122\licenses\OpenSlide\lgpl-2.1.txt" />
+    <Content Include="openslide-win64-20171122\licenses\OpenSlide\LICENSE.txt" />
+    <Content Include="openslide-win64-20171122\licenses\pixman\COPYING" />
+    <Content Include="openslide-win64-20171122\licenses\SQLite\PUBLIC-DOMAIN.txt" />
+    <Content Include="openslide-win64-20171122\licenses\win-iconv\readme.txt" />
+    <Content Include="openslide-win64-20171122\licenses\zlib\README" />
+    <Content Include="openslide-win64-20171122\README.txt" />
+    <Content Include="openslide-win64-20171122\VERSIONS.txt" />
+    <Content Include="wsi_processing_pipeline\.gitignore" />
+    <Content Include="wsi_processing_pipeline\example_pipeline.ipynb" />
+    <Content Include="wsi_processing_pipeline\postprocessing\Example_Pipeline.ipynb" />
+    <Content Include="wsi_processing_pipeline\postprocessing\placeholder.txt" />
+    <Content Include="wsi_processing_pipeline\preprocessing\placeholder.txt" />
+    <Content Include="wsi_processing_pipeline\README.md" />
+    <Content Include="tile_extraction\example.ipynb" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
   <!-- Uncomment the CoreCompile target to enable the Build command in
