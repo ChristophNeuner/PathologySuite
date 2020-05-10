@@ -1,7 +1,11 @@
 ### pituitary gland adenoma classifier
 # see https://github.com/ChristophNeuner/pituitary_gland_adenomas/blob/master/inference_pipelines.ipynb
 
+### see https://stackoverflow.com/questions/59014318/filenotfounderror-could-not-find-module-libvlc-dll
 import os
+os.add_dll_directory(r'D:\FAUbox\Projects\PathologySuite\PathologySuite.AI.Python.Classifier\openslide-win64-20171122\bin')
+
+
 import typing
 from typing import Callable, Union, Dict
 import pathlib
