@@ -341,3 +341,4 @@ ASALocalRun/
 
 # BeatPulse healthcheck temp database
 healthchecksdb
+/PathologySuite.AI.Python.Classifier/n_13-iteration_4-weights_bestmodel_lr2=1e-7--lr3=1e-6_9.pkl

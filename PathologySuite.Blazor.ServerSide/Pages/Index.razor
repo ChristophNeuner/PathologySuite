@@ -3,6 +3,7 @@
 @using System.Text
 @using PathologySuite.Shared.Core.Interfaces
 @using System.IO
+@using PathologySuite.Shared.Models
 @using PathologySuite.Shared.Options
 @using RabbitMQ.Client
 @using RabbitMQ.Client.Events
@@ -12,60 +13,71 @@
 @inject PathOptions _pathOptions
 
 
-@foreach (String p in thumbnailPaths)
+@foreach (WholeSlideImage w in wsis)
 {
-    <img src="@p" />
-    <button @onclick="@(() => SendToAI(p))">send to AI</button>
+    <img src="@w.WebRootPathThumbnail" />
+    <button @onclick="@(() => SendToAI(w.PhysicalPathWsi))">send to AI</button>
 }
-
-<p>@ai_text</p>
 
 
 @code{
-    List<string> thumbnailPaths = new List<string>();
-    string q_name_work = "pituitary_gland_entity_classification_work";
-    string q_name_preds = "pituitary_gland_entity_classification_preds";
-    string connection_address = "localhost";
-    string ai_text = "Predictions: ";
+    List<WholeSlideImage> wsis = new List<WholeSlideImage>();
 
     protected override async Task OnInitializedAsync()
     {
-        var thumbnailNames = Directory.GetFiles($@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/", "*-thumbnail.jpg").Select(Path.GetFileName).ToList();
-        foreach (String n in thumbnailNames)
+
+        //var thumbnailNames = Directory.GetFiles($@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/", "*-thumbnail.jpg").Select(Path.GetFileName).ToList();
+        //foreach (String n in thumbnailNames)
+        //{
+        //    string thumbnailPath = $@"/{_pathOptions.WsiBaseFolderName}/{n}";
+        //    wsis.Add(new WholeSlideImage("", "", "", thumbnailPath));
+
+        //    LogToBrowserConsole(thumbnailPath);
+        //}
+
+        string[] pathParts = new string[] { _webHostEnvironment.WebRootPath, _pathOptions.WsiBaseFolderName };
+        List<string> all = Directory.GetFiles(Path.Combine(pathParts)).ToList();
+        foreach (string s in all)
         {
-            thumbnailPaths.Add($@"/{_pathOptions.WsiBaseFolderName}/{n}");
+
+            if (Path.GetExtension(s) == ".ndpi")
+            {
+                string pathThumb = s.Replace(".ndpi", "") + "-thumbnail.jpg";
+                string[] partsWsi = s.Split(Path.DirectorySeparatorChar);
+                string[] partsThumb = pathThumb.Split(Path.DirectorySeparatorChar);
+                string webrootwsi = "/" + Path.Combine(partsWsi[^2..]).Replace(@"\", @"/");
+                string webrootthumb = "/" + Path.Combine(partsThumb[^2..]).Replace(@"\", @"/");
+                WholeSlideImage wsi = new WholeSlideImage(s.Replace(@"\\", @"\"), pathThumb.Replace(@"\\", @"\"), webrootwsi, webrootthumb);
+                wsis.Add(wsi);
+
+                LogToBrowserConsole(wsi.PhysicalPathWsi);
+
+            }
         }
     }
 
-    private async Task SendToAI(string thumbnailPath)
+    private async Task SendToAI(string pathWsi)
     {
-        await LogToBrowserConsole(thumbnailPath);
+        await LogToBrowserConsole(pathWsi);
 
         // send message
-        var factory = new ConnectionFactory() { HostName = connection_address };
+        var factory = new ConnectionFactory() { HostName = "localhost" };
         using (var connection = factory.CreateConnection())
         using (var channel = connection.CreateModel())
         {
-            channel.QueueDeclare(queue: q_name_work,
-                                 durable: false,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
-
-
-            string message = "whole slide image of pituitary gland adenoma";
+            string message = pathWsi;
             var body = Encoding.UTF8.GetBytes(message);
 
             var properties = channel.CreateBasicProperties();
             properties.Persistent = true;
 
-            channel.BasicPublish(exchange: "",
-                             routingKey: q_name_work,
+            channel.BasicPublish(exchange: "PathologySuite.AI",
+                             routingKey: "multiLabelClassification.pituitaryAdenomas.entities.newWork",
                              basicProperties: properties,
                              body: body);
         }
 
-        await LogToBrowserConsole($"Sent: {thumbnailPath}");
+        await LogToBrowserConsole($"Sent: {pathWsi}");
     }
 
     private async Task LogToBrowserConsole(string message)

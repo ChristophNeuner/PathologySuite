@@ -7,9 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PathologySuite.Blazor.Serve
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PathologySuite.Shared", "PathologySuite.Shared\PathologySuite.Shared.csproj", "{94ED5B15-8A4F-45F4-9677-DD309282C5A4}"
 EndProject
-Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PathologySuite.AI.Python.Classifier", "PathologySuite.AI.Python.Classifier\PathologySuite.AI.Python.Classifier.pyproj", "{5CA5CC84-7DA4-4642-8909-41D076F68192}"
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "PathologySuite.AI.Classifier", "PathologySuite.AI.Python.Classifier\PathologySuite.AI.Classifier.pyproj", "{5CA5CC84-7DA4-4642-8909-41D076F68192}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RabbitMQReceiver", "RabbitMQReceiver\RabbitMQReceiver.csproj", "{B8D2F4C7-A753-4ADE-BA0D-A312D5A40002}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RabbitMQReceiver", "RabbitMQReceiver\RabbitMQReceiver.csproj", "{B8D2F4C7-A753-4ADE-BA0D-A312D5A40002}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
