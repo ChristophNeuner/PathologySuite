@@ -25,13 +25,13 @@ namespace PathologySuite.Blazor.ServerSide
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
-            _pathOptions = new PathOptions(wsiBasePath: $@"{env.WebRootPath}/histo", wsiBaseFolderName: $@"histo", wsiBaseUri: new System.Uri($@"localhost:5000/"));
+            _pathOptions = new PathOptions(wsiBasePath: $@"{env.WebRootPath}/histo", wsiBaseFolderName: $@"histo", wsiBaseUri: new System.Uri($@"http://localhost:5000/"));
 
             // create necessary rabbitMQ exchanges
             //TODO: specify them at a central place and use a seperate script for creation
             var factory = new ConnectionFactory() { HostName = "localhost" };
-            using(var connection = factory.CreateConnection())
-            using(var channel = connection.CreateModel())
+            using (var connection = factory.CreateConnection())
+            using (var channel = connection.CreateModel())
             {
                 channel.ExchangeDeclare(exchange: "PathologySuite.AI", type: "topic");
 
@@ -47,6 +47,9 @@ namespace PathologySuite.Blazor.ServerSide
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
+
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
             services.AddDbContext<ApplicationDbContext>(options =>
@@ -65,6 +68,7 @@ namespace PathologySuite.Blazor.ServerSide
                 options.DetailedErrors = true;
             });
 
+
             services.AddScoped<IWsiProcessor, WsiProcessorNetVips>();
             services.AddScoped<IDziReader, DziReaderNetVips>();
             services.AddSingleton<PathOptions>(_pathOptions);
@@ -73,6 +77,12 @@ namespace PathologySuite.Blazor.ServerSide
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+
+            app.UseCors(builder => builder
+                            .AllowAnyOrigin()
+                            .AllowAnyMethod()
+                            .AllowAnyHeader());
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -96,6 +106,8 @@ namespace PathologySuite.Blazor.ServerSide
             //});
 
             app.UseRouting();
+
+
 
             app.UseAuthentication();
             app.UseAuthorization();

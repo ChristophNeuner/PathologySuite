@@ -176,7 +176,7 @@
       // If it is set, all files will be uploaded with unique filenames,
       // adding increasing number suffixes if necessary, e.g.:
       // "image (2).jpg"
-      uniqueFilenames: undefined,
+          uniqueFilenames: {},
 
       // Error and info messages:
       messages: {

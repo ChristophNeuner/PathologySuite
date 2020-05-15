@@ -16,6 +16,14 @@ window.InitUploader = () => {
 
         //callbacks
         add: async function (e, data) {
+
+            //https://stackoverflow.com/a/55619755
+            var newname = uuidv4() + '$$$==guid==$$$' + data.files[0].name;
+            Object.defineProperty(data.files[0], 'name', {
+                value: newname
+            });
+            $.blueimp.fileupload.prototype.options.add.call(this, e, data);
+
             filename = data.files[0].name;
             filenameToUploadedBytes[filename] = filenameToProgress[filename] = 0;
             filenameToIsPaused[filename] = false;
@@ -201,22 +209,48 @@ async function addXButton(data) {
 
 //Let the server know, when the upload is complete and the file can be further processed.
 async function ajaxDoneRequest(url) {
-    result = await $.ajax({
-        url: url,
-        type: 'POST',
-        dataType: "json"
-    });
+    try {
+        console.log('done request')
+        console.log(url)
 
-    console.log(result);
-    return result['success'];
+        result = await $.ajax({
+            url: url,
+            type: 'GET',
+            dataType: "json",
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.status)
+                console.log(textStatus);
+                console.log(errorThrown);
+                //ajaxDoneRequest(url);
+            }
+        });
+
+        console.log(result);
+        return result['success'];
+    }
+    catch (e) {
+        console.error(e, e.stack)
+    }
+
 }
 
 async function ajaxDeleteRequest(filename) {
+
+    console.log("delete request to: ")
+    console.log(filenameToDeleteUrl[filename]);
+    console.log(filenameToUploadedBytes[filename])
+
     if (filenameToUploadedBytes[filename] > 0) {
         result = await $.ajax({
             url: filenameToDeleteUrl[filename],
             type: 'GET',
-            dataType: "json"
+            dataType: "json",
+            error: function (jqXHR, textStatus, errorThrown) {
+                console.log(jqXHR.status)
+                console.log(textStatus);
+                console.log(errorThrown);
+                //ajaxDoneRequest(url);
+            }
         });
         return result['success'];
     }
@@ -240,4 +274,12 @@ async function retryAjaxDeleteRequest(filename) {
 
 function timeout(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+
+//https://stackoverflow.com/a/2117523
+function uuidv4() {
+    return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
+        (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
+    );
 }

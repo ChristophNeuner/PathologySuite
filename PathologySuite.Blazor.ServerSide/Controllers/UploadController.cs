@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using PathologySuite.Shared.Core.Interfaces;
 using PathologySuite.Shared.Options;
 using PathologySuite.Shared.Models;
+using Microsoft.AspNetCore.Cors;
+using Newtonsoft.Json;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -122,7 +124,6 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
 
             return Json(new BlueimpDoneJsonResponseModel(filename, true));
         }
-
 
         [HttpGet("[action]")]
         public async Task<JsonResult> DeleteBlueimp(string filename)

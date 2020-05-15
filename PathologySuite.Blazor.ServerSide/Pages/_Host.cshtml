@@ -1,0 +1,64 @@
+﻿@page "/"
+@namespace PathologySuite.Blazor.ServerSide.Pages
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PathologySuite.Blazor.ServerSide</title>
+    <base href="~/" />
+    <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
+    <link href="css/site.css" rel="stylesheet" />
+    <link href="css/blueimp-uploader.css" />
+
+    <link rel="stylesheet" href="jQuery-File-Upload-10.25.0/css/jquery.fileupload.css" />
+    <link rel="stylesheet" href="jQuery-File-Upload-10.25.0/css/jquery.fileupload-ui.css" />
+    <noscript>
+            <link rel="stylesheet" href="jQuery-File-Upload-10.25.0/css/jquery.fileupload-noscript.css" />
+        </noscript>
+        <noscript>
+            <link rel="stylesheet" href="jQuery-File-Upload-10.25.0/css/jquery.fileupload-ui-noscript.css" />
+        </noscript>
+</head>
+<body>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
+
+    <script src="_framework/blazor.server.js"></script>
+
+
+    <script src="lib/jquery/jquery.min.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/vendor/jquery.ui.widget.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.iframe-transport.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.fileupload.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.fileupload-process.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.fileupload-image.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.fileupload-audio.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.fileupload-video.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.fileupload-validate.js"></script>
+    <script src="jQuery-File-Upload-10.25.0/js/jquery.fileupload-ui.js"></script>
+
+
+    <script src="lib/openseadragon/openseadragon.min.js"></script>
+    <script src="js/HistoViewer.js"></script>
+    <script src="js/blueimp-uploader.js"></script>
+
+</body>
+</html>
