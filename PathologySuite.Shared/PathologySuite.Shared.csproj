@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
@@ -9,10 +9,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.0-preview.3.20215.14" />
     <PackageReference Include="NetVips" Version="1.2.1" />
     <PackageReference Include="NetVips.Native" Version="8.9.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Services\Interfaces\" />
   </ItemGroup>
 
 </Project>

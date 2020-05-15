@@ -16,6 +16,8 @@ using System.IO;
 using RabbitMQ;
 using RabbitMQ.Client;
 using System.Threading.Channels;
+using PathologySuite.Shared.Services;
+using PathologySuite.Shared.Services.Interfaces;
 
 namespace PathologySuite.Blazor.ServerSide
 {
@@ -25,7 +27,10 @@ namespace PathologySuite.Blazor.ServerSide
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
-            _pathOptions = new PathOptions(wsiBasePath: $@"{env.WebRootPath}/histo", wsiBaseFolderName: $@"histo", wsiBaseUri: new System.Uri($@"http://localhost:5000/"));
+            _pathOptions = new PathOptions(wsiBasePath: $@"{env.WebRootPath}/histo", 
+                wsiBaseFolderName: $@"histo", 
+                wsiBaseUri: new System.Uri($@"http://localhost:5000/"), 
+                guidSeparator: "$$$==guid==$$$");
 
             // create necessary rabbitMQ exchanges
             //TODO: specify them at a central place and use a seperate script for creation
@@ -71,6 +76,7 @@ namespace PathologySuite.Blazor.ServerSide
 
             services.AddScoped<IWsiProcessor, WsiProcessorNetVips>();
             services.AddScoped<IDziReader, DziReaderNetVips>();
+            services.AddScoped<IWsiStorageService, WsiStorageServiceLocal>();
             services.AddSingleton<PathOptions>(_pathOptions);
         }
 

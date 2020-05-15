@@ -3,6 +3,7 @@
 @using System.Diagnostics;
 @using Microsoft.JSInterop
 @inject IJSRuntime JSRuntime
+@inject PathologySuite.Shared.Options.PathOptions _pathOptions;
 
 
 
@@ -65,7 +66,7 @@
     {
         if (firstRender)
         {
-            await JSRuntime.InvokeAsync<string>("InitUploader");
+            await JSRuntime.InvokeAsync<string>("InitUploader", true, _pathOptions.GuidSeparator);
         }
     }
 }

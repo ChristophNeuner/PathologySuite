@@ -30,13 +30,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\PathologySuite.Shared\PathologySuite.Shared.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="wwwroot\css\open-iconic\font\css\" />
     <Folder Include="wwwroot\css\open-iconic\font\fonts\" />
     <Folder Include="wwwroot\jQuery-File-Upload-10.8.0\js\cors\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\PathologySuite.Shared\PathologySuite.Shared.csproj" />
   </ItemGroup>
 
 </Project>

@@ -6,7 +6,10 @@ var filenameToIsPaused = {}
 //api url that shall be invoked on the server, when upload is complete and file can be further processed on the server
 //var filenameToDoneUrl = {}
 
-window.InitUploader = () => {
+
+
+//addGuid:bool if this is true, the uploader will add a guid at the beginning of the filename and separate it with guidSeparatorarator from the rest of the original filename
+window.InitUploader = (addGuid, guidSeparator) => {
     $('#fileupload').fileupload({
         //options
         dataType: 'json',
@@ -16,19 +19,28 @@ window.InitUploader = () => {
 
         //callbacks
         add: async function (e, data) {
-
             //https://stackoverflow.com/a/55619755
-            var newname = uuidv4() + '$$$==guid==$$$' + data.files[0].name;
+            var newname = addGuid ? uuidv4() + guidSeparator + data.files[0].name : data.files[0].name;
             Object.defineProperty(data.files[0], 'name', {
                 value: newname
             });
             $.blueimp.fileupload.prototype.options.add.call(this, e, data);
 
             filename = data.files[0].name;
+            console.log("filename: " + filename)
             filenameToUploadedBytes[filename] = filenameToProgress[filename] = 0;
             filenameToIsPaused[filename] = false;
             data.context = $('<div/>').addClass('upload_file_wrapper').appendTo('#UploadList');
-            data.context.append($('<p/>').addClass('upload_file_name').text(filename));
+
+            console.log(removeGuidFromFilename(filename, guidSeparator));
+
+            if (addGuid) {
+                data.context.append($('<p/>').addClass('upload_file_name').text(removeGuidFromFilename(filename, guidSeparator)));
+            }
+            else {
+                data.context.append($('<p/>').addClass('upload_file_name').text(filename));
+            }
+
             addUploadButton(data);
             addIndividualProgressBar(data, 0);
             addXButton(data);
@@ -249,7 +261,6 @@ async function ajaxDeleteRequest(filename) {
                 console.log(jqXHR.status)
                 console.log(textStatus);
                 console.log(errorThrown);
-                //ajaxDoneRequest(url);
             }
         });
         return result['success'];
@@ -282,4 +293,12 @@ function uuidv4() {
     return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, c =>
         (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
     );
+}
+
+function removeGuidFromFilename(filename, guidSeparator) {
+    return filename.split(guidSeparator)[1];
+}
+
+function getGuidFromFilename(filename, guidSeparator) {
+    return filename.split(guidSeparator)[0];
 }
