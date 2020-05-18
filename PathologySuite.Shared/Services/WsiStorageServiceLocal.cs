@@ -6,6 +6,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using PathologySuite.Shared.Core.Interfaces;
+using PathologySuite.Shared.Models;
 
 namespace PathologySuite.Shared.Services.Interfaces
 {
@@ -13,11 +14,13 @@ namespace PathologySuite.Shared.Services.Interfaces
     {
         private readonly PathOptions _pathOptions;
         private readonly IWsiProcessor _wsiProcessor;
+        private readonly WsiDbService _wsiDbService;
 
         public WsiStorageServiceLocal(IServiceProvider serviceProvider)
         {
             _pathOptions = serviceProvider.GetService<PathOptions>();
             _wsiProcessor = serviceProvider.GetService<IWsiProcessor>();
+            _wsiDbService = serviceProvider.GetService<WsiDbService>();
 
             if (!System.IO.Directory.Exists(_pathOptions.WsiBasePath))
             {
@@ -25,7 +28,7 @@ namespace PathologySuite.Shared.Services.Interfaces
             }
         }
 
-        public async Task<bool> DeleteAsync(string filename)
+        public async Task<WholeSlideImage> DeleteAsync(string filename)
         {
 
             filename = Path.GetFileNameWithoutExtension(filename);
@@ -56,7 +59,7 @@ namespace PathologySuite.Shared.Services.Interfaces
             return true;
         }
 
-        public async Task<bool> NotifyUploadCompleteAsync(string filename)
+        public async Task<WholeSlideImage> NotifyUploadCompleteAsync(string filename)
         {
             try
             {
@@ -77,12 +80,9 @@ namespace PathologySuite.Shared.Services.Interfaces
             return true;
         }
 
-        public async Task SaveAsync(IFormFile file)
+        public async Task<WholeSlideImage> SaveAsync(IFormFile file)
         {
-            var filename = ContentDispositionHeaderValue
-                    .Parse(file.ContentDisposition)
-                    .FileName
-                    .Trim('"');
+            var filename = Utils.GetFilenameFromIFormFile(file);
             var filepath = $@"{_pathOptions.WsiBasePath}/{filename}";
 
             if (!System.IO.File.Exists(filepath))

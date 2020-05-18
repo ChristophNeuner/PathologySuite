@@ -9,17 +9,20 @@ namespace PathologySuite.Shared.Options
 {
     public class PathOptions
     {
-        public PathOptions(String wsiBasePath, String wsiBaseFolderName, Uri wsiBaseUri, string guidSeparator)
+        public PathOptions(String wsiBasePath, String wsiBaseFolderName, Uri appBaseUri, string guidSeparator)
         {
             WsiBasePath = wsiBasePath;
             WsiBaseFolderName = wsiBaseFolderName;
-            WsiBaseUri = wsiBaseUri;
+            AppBaseUri = AppBaseUri;
             GuidSeparator = guidSeparator;
         }
-        public String WsiBasePath{get; private set;}
-        public String WsiBaseFolderName { get; private set; }
+        public String WsiBasePath{get; set;}
+        public String WsiBaseFolderName { get; set; }
 
-        public Uri WsiBaseUri { get; private set; }
-        public string GuidSeparator { get; private set; }
+        /// <summary>
+        /// e.g. http://localhost:5000/
+        /// </summary>
+        public Uri AppBaseUri { get; set; }
+        public string GuidSeparator { get; set; }
     }
 }

@@ -13,6 +13,8 @@ using PathologySuite.Shared.Models;
 using PathologySuite.Shared.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using System.Diagnostics;
+using PathologySuite.Shared;
+using PathologySuite.Shared.Services;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -26,13 +28,15 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
         private IWebHostEnvironment _webHostEnvironment;
         private PathOptions _pathOptions;
         private IWsiStorageService _wsiStorageService;
+        private WsiDbService _wsiDbService;
 
-        public UploadController(IWebHostEnvironment env, IWebHostEnvironment webHostEnvironment, PathOptions pathOptions, IWsiStorageService wsiStorageService)
+        public UploadController(IWebHostEnvironment env, IWebHostEnvironment webHostEnvironment, PathOptions pathOptions, IWsiStorageService wsiStorageService, WsiDbService wsiDbService)
         {
             _hostingEnv = env;
             _webHostEnvironment = webHostEnvironment;
             _pathOptions = pathOptions;
             _wsiStorageService = wsiStorageService;
+            _wsiDbService = wsiDbService;
         }
 
         [HttpPost("[action]")]
@@ -45,20 +49,16 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
 
             foreach (var file in files)
             {
-                var filename = ContentDispositionHeaderValue
-                    .Parse(file.ContentDisposition)
-                    .FileName
-                    .Trim('"');
-                var filepath = $@"{_pathOptions.WsiBasePath}/{filename}";
+                var filename = Utils.GetFilenameFromIFormFile(file);
 
-                string filenameWithoutExtension = Path.GetFileNameWithoutExtension(filename);
-                string deleteURL = $@"{_pathOptions.WsiBaseUri}api/upload/DeleteBlueimp/?filename={filename}";
-                string doneURL = $@"{_pathOptions.WsiBaseUri}api/upload/OnAfterSuccessfulUploadBlueimp/?filename={filename}";
+                string deleteURL = $@"{_pathOptions.AppBaseUri}api/upload/DeleteBlueimp/?filename={filename}";
+                string doneURL = $@"{_pathOptions.AppBaseUri}api/upload/OnAfterSuccessfulUploadBlueimp/?filename={filename}";
                 responseModels.Add(new BlueimpUploadJsonResponseModel(filename, file.Length, deleteURL, doneURL, error: ""));
 
                 try
                 {
-                    await _wsiStorageService.SaveAsync(file);
+                    WholeSlideImage wsi =  await _wsiStorageService.SaveAsync(file);
+                    await _wsiDbService.CreateOrUpdateAsync(Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator), wsi);
                 }
 
                 catch (Exception e)
@@ -73,21 +73,43 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
         [HttpGet("[action]")]
         public async Task<JsonResult> OnAfterSuccessfulUploadBlueimp(string filename)
         {
-            bool result = await _wsiStorageService.NotifyUploadCompleteAsync(filename);
+            bool success = true;
+            try
+            {
+                WholeSlideImage wsi = await _wsiStorageService.NotifyUploadCompleteAsync(filename);
+                await _wsiDbService.CreateOrUpdateAsync(Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator), wsi);
+            }
+            catch(Exception e)
+            {
+                //TODO
+                Console.WriteLine(e.Message);
+                success = false;
+            }
 
-            Debug.Assert(result);
+            Debug.Assert(success);
 
-            return Json(new BlueimpDoneJsonResponseModel(filename, result));
+            return Json(new BlueimpDoneJsonResponseModel(filename, success));
         }
 
         [HttpGet("[action]")]
         public async Task<JsonResult> DeleteBlueimp(string filename)
         {
-            bool result = await _wsiStorageService.DeleteAsync(filename);
+            bool success = true;
+            try
+            {
+                WholeSlideImage wsi = await _wsiStorageService.DeleteAsync(filename);
+                await _wsiDbService.RemoveAsync(Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator));
+            }
+            catch(Exception e)
+            {
+                //TODO
+                Console.WriteLine(e.Message);
+                success = false;
+            }
 
-            Debug.Assert(result);
+            Debug.Assert(success);
 
-            return Json(new PathologySuite.Shared.Models.BlueimpDeleteJsonResponseModel(filename, result));
+            return Json(new PathologySuite.Shared.Models.BlueimpDeleteJsonResponseModel(filename, success));
         }
     }
 }

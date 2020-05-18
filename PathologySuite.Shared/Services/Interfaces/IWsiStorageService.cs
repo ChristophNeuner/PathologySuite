@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using PathologySuite.Shared.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,8 +10,8 @@ namespace PathologySuite.Shared.Services.Interfaces
 {
     public interface IWsiStorageService
     {
-        Task SaveAsync(IFormFile file);
-        Task<bool> DeleteAsync(string filename);
-        Task<bool> NotifyUploadCompleteAsync(string filename);
+        Task<WholeSlideImage> SaveAsync(IFormFile file);
+        Task<WholeSlideImage> DeleteAsync(string filename);
+        Task<WholeSlideImage> NotifyUploadCompleteAsync(string filename);
     }
 }

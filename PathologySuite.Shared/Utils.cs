@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,6 +31,11 @@ namespace PathologySuite.Shared
         public static string GetGuidFromFilename(string filename, string guidSeparator)
         {
             return filename.Split(guidSeparator)[0];
+        }
+
+        public static string GetFilenameFromIFormFile(IFormFile file)
+        {
+            return ContentDispositionHeaderValue.Parse(file.ContentDisposition).FileName.Trim('"');
         }
     }
 }

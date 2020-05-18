@@ -18,6 +18,8 @@ using RabbitMQ.Client;
 using System.Threading.Channels;
 using PathologySuite.Shared.Services;
 using PathologySuite.Shared.Services.Interfaces;
+using Microsoft.Extensions.Options;
+using PathologySuite.Shared.Models;
 
 namespace PathologySuite.Blazor.ServerSide
 {
@@ -29,7 +31,7 @@ namespace PathologySuite.Blazor.ServerSide
             Configuration = configuration;
             _pathOptions = new PathOptions(wsiBasePath: $@"{env.WebRootPath}/histo", 
                 wsiBaseFolderName: $@"histo", 
-                wsiBaseUri: new System.Uri($@"http://localhost:5000/"), 
+                appBaseUri: new System.Uri($@"http://localhost:5000/"), 
                 guidSeparator: "$$$==guid==$$$");
 
             // create necessary rabbitMQ exchanges
@@ -62,6 +64,12 @@ namespace PathologySuite.Blazor.ServerSide
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            //MongoDb
+            services.Configure<PathologySuiteDatabaseSettings>(Configuration.GetSection(nameof(PathologySuiteDatabaseSettings)));
+            services.AddSingleton<IPathologySuiteDatabaseSettings>(sp => sp.GetRequiredService<IOptions<PathologySuiteDatabaseSettings>>().Value);
+            services.AddSingleton<WsiDbService>();
+
             services.AddRazorPages();
             //services.AddServerSideBlazor(/*options => options.JSInteropDefaultCallTimeout = TimeSpan.FromSeconds(120)*/);
             services.AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<IdentityUser>>();
