@@ -9,50 +9,33 @@
 @using RabbitMQ.Client.Events
 
 @inject Microsoft.AspNetCore.Hosting.IWebHostEnvironment _webHostEnvironment
-@inject IJSRuntime JSRuntime
+@inject IJSRuntime _jsRuntime
 @inject PathOptions _pathOptions
+@inject PathologySuite.Shared.Services.Interfaces.IWsiStorageService _wsiStorageService
+@inject PathologySuite.Shared.Services.WsiDbService _wsiDbService;
 
 
-@foreach (WholeSlideImage w in wsis)
+@foreach (WholeSlideImage wsi in wsis)
 {
-    <img src="@w.WebRootPathThumbnail" />
-    <button @onclick="@(() => SendToAI(w.PhysicalPathWsi))">send to AI</button>
+    byte[] thumbByteArray = wsiToThumbByteArray[wsi];
+    string thumbBase64 = Convert.ToBase64String(thumbByteArray);
+    string imgSrc = $"data:image/jpg;base64,{thumbBase64}";
+    <img src="@imgSrc" />
+    <button @onclick="@(() => SendToAI(wsi.PhysicalPathWsi))">send to AI</button>
 }
 
 
 @code{
     List<WholeSlideImage> wsis = new List<WholeSlideImage>();
+    Dictionary<WholeSlideImage, byte[]> wsiToThumbByteArray = new Dictionary<WholeSlideImage, byte[]>();
 
     protected override async Task OnInitializedAsync()
     {
-
-        //var thumbnailNames = Directory.GetFiles($@"{_webHostEnvironment.WebRootPath}/{_pathOptions.WsiBaseFolderName}/", "*-thumbnail.jpg").Select(Path.GetFileName).ToList();
-        //foreach (String n in thumbnailNames)
-        //{
-        //    string thumbnailPath = $@"/{_pathOptions.WsiBaseFolderName}/{n}";
-        //    wsis.Add(new WholeSlideImage("", "", "", thumbnailPath));
-
-        //    LogToBrowserConsole(thumbnailPath);
-        //}
-
-        string[] pathParts = new string[] { _webHostEnvironment.WebRootPath, _pathOptions.WsiBaseFolderName };
-        List<string> all = Directory.GetFiles(Path.Combine(pathParts)).ToList();
-        foreach (string s in all)
+        wsis = await _wsiDbService.GetAsync();
+        foreach(WholeSlideImage wsi in wsis)
         {
-
-            if (Path.GetExtension(s) == ".ndpi")
-            {
-                string pathThumb = s.Replace(".ndpi", "") + "-thumbnail.jpg";
-                string[] partsWsi = s.Split(Path.DirectorySeparatorChar);
-                string[] partsThumb = pathThumb.Split(Path.DirectorySeparatorChar);
-                string webrootwsi = "/" + Path.Combine(partsWsi[^2..]).Replace(@"\", @"/");
-                string webrootthumb = "/" + Path.Combine(partsThumb[^2..]).Replace(@"\", @"/");
-                WholeSlideImage wsi = new WholeSlideImage(s.Replace(@"\\", @"\"), pathThumb.Replace(@"\\", @"\"), webrootwsi, webrootthumb);
-                wsis.Add(wsi);
-
-                LogToBrowserConsole(wsi.PhysicalPathWsi);
-
-            }
+            byte[] thumbByteArray = await _wsiStorageService.GetThumbnailAsync(wsi);
+            wsiToThumbByteArray.Add(wsi, thumbByteArray);
         }
     }
 
@@ -82,6 +65,6 @@
 
     private async Task LogToBrowserConsole(string message)
     {
-        await JSRuntime.InvokeAsync<string>("console.log", message);
+        await _jsRuntime.InvokeAsync<string>("console.log", message);
     }
 }

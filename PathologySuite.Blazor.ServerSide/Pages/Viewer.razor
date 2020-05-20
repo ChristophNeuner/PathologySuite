@@ -34,16 +34,16 @@
 
     private async Task UpdateHistoViewer(String thumbnailPath)
     {
-        String thumbnailName = thumbnailPath.Split('/')[^1];
-        String wsiName = thumbnailName.Replace("-thumbnail.jpg", "");
+        //String thumbnailName = thumbnailPath.Split('/')[^1];
+        //String wsiName = thumbnailName.Replace("-thumbnail.jpg", "");
 
-        string dziFilePath = $@"{_pathOptions.WsiBasePath}/{wsiName}.dzi";
-        string dziTilesPath = $@"{_pathOptions.WsiBasePath}/{wsiName}_files/";
-        string dziFilePathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}.dzi";
-        string dziTilesPathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}_files/";
+        //string dziFilePath = $@"{_pathOptions.WsiBasePath}/{wsiName}.dzi";
+        //string dziTilesPath = $@"{_pathOptions.WsiBasePath}/{wsiName}_files/";
+        //string dziFilePathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}.dzi";
+        //string dziTilesPathWeb = $@"{_pathOptions.WsiBaseUri.ToString()}/{_pathOptions.WsiBaseFolderName}/{wsiName}_files/";
 
 
-        var dzi = _dziReader.ReadDziFile(dziFilePath);
-        await JSRuntime.InvokeAsync<string>("ViewHisto", viewerId, dziTilesPathWeb, dzi.Xmlns, dzi.Format, dzi.Overlap, dzi.TileSize, dzi.Height, dzi.Width);
+        //var dzi = _dziReader.ReadDziFile(dziFilePath);
+        //await JSRuntime.InvokeAsync<string>("ViewHisto", viewerId, dziTilesPathWeb, dzi.Xmlns, dzi.Format, dzi.Overlap, dzi.TileSize, dzi.Height, dzi.Width);
     }
 }

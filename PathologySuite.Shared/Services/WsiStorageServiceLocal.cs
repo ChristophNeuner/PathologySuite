@@ -28,21 +28,21 @@ namespace PathologySuite.Shared.Services.Interfaces
             }
         }
 
-        public async Task<WholeSlideImage> DeleteAsync(string filename)
+        public async Task DeleteAsync(string filename)
         {
 
-            filename = Path.GetFileNameWithoutExtension(filename);
+            string filenameWithoutExt = Path.GetFileNameWithoutExtension(filename);
             try
             {
                 foreach (string file in System.IO.Directory.GetFiles($@"{ _pathOptions.WsiBasePath}/"))
                 {
-                    if (file.Contains(filename))
+                    if (file.Contains(filenameWithoutExt))
                     {
                         System.IO.File.Delete(file);
 
                         foreach (string dir in System.IO.Directory.GetDirectories($@"{ _pathOptions.WsiBasePath}/"))
                         {
-                            if (dir.Contains(filename))
+                            if (dir.Contains(filenameWithoutExt))
                             {
                                 System.IO.Directory.Delete(dir);
                             }
@@ -55,8 +55,6 @@ namespace PathologySuite.Shared.Services.Interfaces
                 //TODO
                 throw e;
             }
-
-            return true;
         }
 
         public async Task<WholeSlideImage> NotifyUploadCompleteAsync(string filename)
@@ -77,7 +75,12 @@ namespace PathologySuite.Shared.Services.Interfaces
                 throw e;
             }
 
-            return true;
+            return new WholeSlideImage(id: Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator),
+                filename: filename,
+                fileExtension: Path.GetExtension(filename),
+                physicalPathWsi: Path.Combine(new string[] { _pathOptions.WsiBasePath, filename }),
+                physcialPathThumbnail: Path.Combine(new string[] { _pathOptions.WsiBasePath, Utils.GetThumbnailName(filename) }),
+                completelyUploaded: true);
         }
 
         public async Task<WholeSlideImage> SaveAsync(IFormFile file)
@@ -111,6 +114,18 @@ namespace PathologySuite.Shared.Services.Interfaces
                     await fs.FlushAsync();
                 }
             }
+
+            return new WholeSlideImage(id: Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator),
+                            filename: filename,
+                            fileExtension: Path.GetExtension(filename),
+                            physicalPathWsi: Path.Combine(new string[] { _pathOptions.WsiBasePath, filename }),
+                            physcialPathThumbnail: Path.Combine(new string[] { _pathOptions.WsiBasePath, Utils.GetThumbnailName(filename) }),
+                            completelyUploaded: false);
+        }
+
+        public async Task<byte[]> GetThumbnailAsync(WholeSlideImage wsi)
+        {
+            return await File.ReadAllBytesAsync(wsi.PhysicalPathThumbnail);
         }
     }
 }

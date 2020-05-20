@@ -16,8 +16,8 @@ namespace PathologySuite.Shared.Models
         private string _fileExtension;
         private string _physicalPathWsi;
         private string _physcialPathThumbnail;
-        private string _webRootPathWsi;
-        private string _webRootPathThumbnail;
+        //private string _webRootPathWsi;
+        //private string _webRootPathThumbnail;
         private bool _completelyUploaded;
 
         public WholeSlideImage(string id,
@@ -25,8 +25,8 @@ namespace PathologySuite.Shared.Models
                                 string fileExtension,
                                 string physicalPathWsi,
                                 string physcialPathThumbnail,
-                                string webRootPathWsi,
-                                string webRootPathThumbnail,
+                                //string webRootPathWsi,
+                                //string webRootPathThumbnail,
                                 bool completelyUploaded)
         {
             _id = id ?? throw new ArgumentNullException(nameof(id));
@@ -34,13 +34,12 @@ namespace PathologySuite.Shared.Models
             _fileExtension = fileExtension ?? throw new ArgumentNullException(nameof(fileExtension));
             _physicalPathWsi = physicalPathWsi ?? throw new ArgumentNullException(nameof(physicalPathWsi));
             _physcialPathThumbnail = physcialPathThumbnail ?? throw new ArgumentNullException(nameof(physcialPathThumbnail));
-            _webRootPathWsi = webRootPathWsi ?? throw new ArgumentNullException(nameof(webRootPathWsi));
-            _webRootPathThumbnail = webRootPathThumbnail ?? throw new ArgumentNullException(nameof(webRootPathThumbnail));
+            //_webRootPathWsi = webRootPathWsi ?? throw new ArgumentNullException(nameof(webRootPathWsi));
+            //_webRootPathThumbnail = webRootPathThumbnail ?? throw new ArgumentNullException(nameof(webRootPathThumbnail));
             _completelyUploaded = completelyUploaded;
         }
 
         [BsonId]
-        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
         public string Id { get { return _id; } set { _id = value; } }
 
         [BsonElement("Name")]
@@ -54,15 +53,15 @@ namespace PathologySuite.Shared.Models
         public string PhysicalPathWsi { get { return _physicalPathWsi; } set { _physicalPathWsi = value; } }
         public string PhysicalPathThumbnail { get { return _physcialPathThumbnail; } set { _physcialPathThumbnail = value; } }
 
-        /// <summary>
-        /// part of the full path that comes after WebRootPath (by default everything after ~/wwwroot/)
-        /// </summary>
-        public string WebRootPathWsi { get { return _webRootPathWsi; } set { _webRootPathWsi = value; } }
+        ///// <summary>
+        ///// part of the full path that comes after WebRootPath (by default everything after ~/wwwroot/)
+        ///// </summary>
+        //public string WebRootPathWsi { get { return _webRootPathWsi; } set { _webRootPathWsi = value; } }
 
-        /// <summary>
-        /// part of the full path that comes after WebRootPath (by default everything after ~/wwwroot/)
-        /// </summary>
-        public string WebRootPathThumbnail { get { return _webRootPathThumbnail; } set { _webRootPathThumbnail = value; } }
+        ///// <summary>
+        ///// part of the full path that comes after WebRootPath (by default everything after ~/wwwroot/)
+        ///// </summary>
+        //public string WebRootPathThumbnail { get { return _webRootPathThumbnail; } set { _webRootPathThumbnail = value; } }
 
         public bool CompletelyUploaded { get { return _completelyUploaded; } set { _completelyUploaded = value; } }
     }

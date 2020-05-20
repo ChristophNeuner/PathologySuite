@@ -26,6 +26,7 @@ namespace PathologySuite.Blazor.ServerSide
     public class Startup
     {
         private readonly PathOptions _pathOptions;
+        private readonly IMessagingService _messagingService;
         public Startup(IConfiguration configuration, IWebHostEnvironment env)
         {
             Configuration = configuration;
@@ -86,6 +87,7 @@ namespace PathologySuite.Blazor.ServerSide
             services.AddScoped<IDziReader, DziReaderNetVips>();
             services.AddScoped<IWsiStorageService, WsiStorageServiceLocal>();
             services.AddSingleton<PathOptions>(_pathOptions);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

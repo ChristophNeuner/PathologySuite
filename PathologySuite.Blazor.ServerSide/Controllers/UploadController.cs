@@ -58,7 +58,7 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
                 try
                 {
                     WholeSlideImage wsi =  await _wsiStorageService.SaveAsync(file);
-                    await _wsiDbService.CreateOrUpdateAsync(Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator), wsi);
+                    await _wsiDbService.CreateOrUpdateAsync(wsi.Id, wsi);
                 }
 
                 catch (Exception e)
@@ -74,15 +74,17 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
         public async Task<JsonResult> OnAfterSuccessfulUploadBlueimp(string filename)
         {
             bool success = true;
+            WholeSlideImage wsi = await _wsiStorageService.NotifyUploadCompleteAsync(filename);
+            await _wsiDbService.CreateOrUpdateAsync(wsi.Id, wsi);
             try
             {
-                WholeSlideImage wsi = await _wsiStorageService.NotifyUploadCompleteAsync(filename);
-                await _wsiDbService.CreateOrUpdateAsync(Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator), wsi);
+
             }
             catch(Exception e)
             {
                 //TODO
-                Console.WriteLine(e.Message);
+                //Console.WriteLine(e.Message);
+                throw e;
                 success = false;
             }
 
@@ -97,7 +99,7 @@ namespace PathologySuite.Blazor.ServerSide.Controllers
             bool success = true;
             try
             {
-                WholeSlideImage wsi = await _wsiStorageService.DeleteAsync(filename);
+                await _wsiStorageService.DeleteAsync(filename);
                 await _wsiDbService.RemoveAsync(Utils.GetGuidFromFilename(filename, _pathOptions.GuidSeparator));
             }
             catch(Exception e)
