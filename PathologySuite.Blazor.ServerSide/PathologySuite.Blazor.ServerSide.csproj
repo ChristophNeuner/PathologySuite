@@ -33,6 +33,7 @@
   <ItemGroup>
     <Folder Include="wwwroot\css\open-iconic\font\css\" />
     <Folder Include="wwwroot\css\open-iconic\font\fonts\" />
+    <Folder Include="wwwroot\histo\" />
     <Folder Include="wwwroot\jQuery-File-Upload-10.8.0\js\cors\" />
   </ItemGroup>
 

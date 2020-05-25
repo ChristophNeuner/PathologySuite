@@ -17,24 +17,36 @@
 
 @foreach (WholeSlideImage wsi in wsis)
 {
-    byte[] thumbByteArray = wsiToThumbByteArray[wsi];
-    string thumbBase64 = Convert.ToBase64String(thumbByteArray);
-    string imgSrc = $"data:image/jpg;base64,{thumbBase64}";
-    <img src="@imgSrc" />
-    <button @onclick="@(() => SendToAI(wsi.PhysicalPathWsi))">send to AI</button>
+    byte[]? thumbByteArray;
+
+    if (wsiToThumbByteArray.TryGetValue(wsi, out thumbByteArray))
+    {
+        if (thumbByteArray != null)
+        {
+            string thumbBase64 = Convert.ToBase64String(thumbByteArray);
+            string imgSrc = $"data:image/jpg;base64,{thumbBase64}";
+
+            <span>
+                <span>@Path.GetFileNameWithoutExtension(PathologySuite.Shared.Utils.RemoveGuid(wsi.Filename, _pathOptions.GuidSeparator))</span>
+                <img src="@imgSrc" />
+                <button @onclick="@(() => SendToAI(wsi.PhysicalPathWsi))">send to AI</button>
+            </span>
+        }
+    }
+
 }
 
 
 @code{
     List<WholeSlideImage> wsis = new List<WholeSlideImage>();
-    Dictionary<WholeSlideImage, byte[]> wsiToThumbByteArray = new Dictionary<WholeSlideImage, byte[]>();
+    Dictionary<WholeSlideImage, byte[]?> wsiToThumbByteArray = new Dictionary<WholeSlideImage, byte[]?>();
 
     protected override async Task OnInitializedAsync()
     {
         wsis = await _wsiDbService.GetAsync();
-        foreach(WholeSlideImage wsi in wsis)
+        foreach (WholeSlideImage wsi in wsis)
         {
-            byte[] thumbByteArray = await _wsiStorageService.GetThumbnailAsync(wsi);
+            byte[]? thumbByteArray = await _wsiStorageService.GetThumbnailAsync(wsi);
             wsiToThumbByteArray.Add(wsi, thumbByteArray);
         }
     }

@@ -61,12 +61,12 @@ namespace PathologySuite.Shared.Services.Interfaces
         {
             try
             {
-                var filepath = $@"{_pathOptions.WsiBasePath}/{filename}";
-                if (System.IO.File.Exists(filepath))
+                string wsiPath = Path.Combine(new string[] { _pathOptions.WsiBasePath, filename });
+                if (System.IO.File.Exists(wsiPath))
                 {
-                    //fire and forget method in new task
-                    _wsiProcessor.GenerateThumbnail(filepath);
-                    //_wsiProcessor.GenerateDzi(filepath);
+                    byte[] thumbnail = await _wsiProcessor.GenerateThumbnail(await File.ReadAllBytesAsync(wsiPath));
+                    string thumbPath = Path.Combine(new string[] { _pathOptions.WsiBasePath, Utils.GetThumbnailName(filename) });
+                    await File.WriteAllBytesAsync(thumbPath, thumbnail);
                 }
             }
             catch (Exception e)
@@ -123,9 +123,23 @@ namespace PathologySuite.Shared.Services.Interfaces
                             completelyUploaded: false);
         }
 
-        public async Task<byte[]> GetThumbnailAsync(WholeSlideImage wsi)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="wsi"></param>
+        /// <returns>byte[] of the thumbnail image or null if the thumbnail generation has not finished yet</returns>
+        public async Task<byte[]?> GetThumbnailAsync(WholeSlideImage wsi)
         {
-            return await File.ReadAllBytesAsync(wsi.PhysicalPathThumbnail);
+            try
+            {
+                return await File.ReadAllBytesAsync(wsi.PhysicalPathThumbnail);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine($"thumbnail of {wsi.Filename} not completely generated");
+                return null;
+            }
         }
     }
 }

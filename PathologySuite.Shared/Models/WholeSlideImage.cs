@@ -43,7 +43,7 @@ namespace PathologySuite.Shared.Models
         public string Id { get { return _id; } set { _id = value; } }
 
         [BsonElement("Name")]
-        public string FileName { get { return _filename; } set { _filename = value; } }
+        public string Filename { get { return _filename; } set { _filename = value; } }
 
         /// <summary>
         /// e.g. ".ndpi"

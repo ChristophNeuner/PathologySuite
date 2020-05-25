@@ -15,6 +15,11 @@ namespace PathologySuite.Shared.Services.Interfaces
         Task<WholeSlideImage> NotifyUploadCompleteAsync(string filename);
         Task DeleteAsync(string filename);
 
-        Task<byte[]> GetThumbnailAsync(WholeSlideImage wsi);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="wsi"></param>
+        /// <returns></returns>
+        Task<byte[]?> GetThumbnailAsync(WholeSlideImage wsi);
     }
 }

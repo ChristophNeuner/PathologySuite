@@ -10,24 +10,43 @@ namespace PathologySuite.Shared.Core
 {
     public class WsiProcessorNetVips : IWsiProcessor
     {
-        public void GenerateThumbnail(string path)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="buffer">byte[] of a whole-slide image</param>
+        /// <returns>byte[] of the generated thumbnail image</returns>
+        public Task<byte[]> GenerateThumbnail(byte[] wholeSlideImage)
+        {
+            return Task.Run(() =>
+            {
+                Image thumbnail = Image.NewFromBuffer(wholeSlideImage).ThumbnailImage(200);
+                return thumbnail.JpegsaveBuffer();
+            });
+        }
+
+        public Task<byte[]> GenerateDzi(byte[] wholeSlideImage)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void GenerateThumbnail(string wsiPath)
         {
             Task.Run(() =>
             {
-                string filenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-                string directoryName = Path.GetDirectoryName(path);
-                Image thumbnail = Image.NewFromFile(path).ThumbnailImage(200);
+                string filenameWithoutExtension = Path.GetFileNameWithoutExtension(wsiPath);
+                string directoryName = Path.GetDirectoryName(wsiPath);
+                Image thumbnail = Image.NewFromFile(wsiPath).ThumbnailImage(200);
                 thumbnail.Jpegsave($@"{directoryName}\{filenameWithoutExtension}-thumbnail.jpg");
             });
         }
 
-        public void GenerateDzi(string path)
+        public void GenerateDzi(string wsiPath)
         {
             Task.Run(() =>
             {
-                string filenameWithoutExtension = Path.GetFileNameWithoutExtension(path);
-                string directoryName = Path.GetDirectoryName(path);
-                Image img = Image.NewFromFile(path);
+                string filenameWithoutExtension = Path.GetFileNameWithoutExtension(wsiPath);
+                string directoryName = Path.GetDirectoryName(wsiPath);
+                Image img = Image.NewFromFile(wsiPath);
                 img.Dzsave($@"{directoryName}\{filenameWithoutExtension}");
             });
         }
